@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "edutransit-transport-management",
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
