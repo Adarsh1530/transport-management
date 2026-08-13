@@ -110,14 +110,28 @@ body {
 .auth-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  gap: 14px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+.auth-brand div {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-brand span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #93c5fd;
+  letter-spacing: normal;
+  margin-top: 2px;
 }
 
 .auth-brand i {
-  font-size: 28px;
+  font-size: 32px;
   color: #60a5fa;
 }
 
@@ -867,8 +881,13 @@ body {
 }
 
 .badge-inactive {
-  background: #f1f5f9;
-  color: #64748b;
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.badge-fitness-test {
+  background: #dbeafe;
+  color: #1d4ed8;
 }
 
 /* Buttons & Actions */
@@ -1094,12 +1113,18 @@ body {
 }
 
 .modal-footer {
-  padding: 16px 24px;
-  background: #f8fafc;
-  border-top: 1px solid var(--color-border);
+  padding: 16px 0 0 0;
+  background: transparent;
+  border-top: none;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+#generic-modal-body .modal-footer {
+  padding: 16px 0 0 0;
+  background: transparent;
+  border-top: none;
 }
 
 /* Dropdown menus (Notifications & User Profile) */
@@ -1732,9 +1757,168 @@ body {
     opacity: 1 !important;
   }
 
-  .motion-ripple, .notif-badge, .badge-due-today, .badge-expired {
-    animation: none !important;
+
+/* ==========================================
+   13-INCH DISPLAY OPTIMIZATION & NON-WRAPPING DATA FIELDS
+   ========================================== */
+.bus-no-text,
+.vehicle-no-text,
+.license-no-text,
+.phone-no-text,
+.driver-name-text,
+.nowrap-single-line {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
+@media screen and (max-width: 1400px) {
+  .metrics-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  .sidebar {
+    width: 230px;
+  }
+  .main-wrapper {
+    margin-left: 230px;
+  }
+  .content-body {
+    padding: 20px;
+  }
+  .metrics-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .metrics-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .custom-table {
+    font-size: 12.5px;
+  }
+  .custom-table th, .custom-table td {
+    padding: 10px 12px;
+  }
+}
+
+/* ==========================================
+   OFFICIAL A4 PRINT RULES FOR SCHOOL BUS STATEMENT
+   ========================================== */
+.a4-statement-page {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#statement-print-container,
+#dedicated-print-container {
+  display: none !important;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm 10mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-size: 11pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Completely exclude application UI, sidebars, headers, modals, cards, inputs */
+  #app-layout,
+  #auth-view,
+  .sidebar,
+  .top-header,
+  .main-wrapper,
+  .page-container,
+  .page,
+  .card,
+  .modal-overlay,
+  .modal-card,
+  .modal-header,
+  .modal-body,
+  .no-print,
+  .controls-bar,
+  .btn-primary,
+  .btn-secondary,
+  .notification-bell-btn {
+    display: none !important;
+  }
+
+  /* Exclude all siblings when statement printing container is active */
+  body.printing-statement-active > *:not(#statement-print-container):not(#dedicated-print-container) {
+    display: none !important;
+  }
+
+  body.printing-statement-active #statement-print-container,
+  body.printing-statement-active #dedicated-print-container,
+  #statement-print-container,
+  #dedicated-print-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+
+  .a4-statement-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 275mm !important;
+    box-sizing: border-box !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .a4-statement-page:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  .a4-statement-page table {
+    border: 1px solid #000000 !important;
+  }
+
+  .a4-statement-page th,
+  .a4-statement-page td {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+  }
+}
+
+/* ==========================================
+   REPORT BUILDER TWO-PANEL RESPONSIVE STYLES
+   ========================================== */
+@media (max-width: 1024px) {
+  .report-builder-layout {
+    grid-template-columns: 1fr !important;
   }
 }
 
 
+
+.builder-module-card.builder-active {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.16), 0 4px 12px rgba(37, 99, 235, 0.12);
+  background: #eff6ff !important;
+}

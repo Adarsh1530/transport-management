@@ -189,6 +189,20 @@ function openAddTripModal() {
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
         <div class="form-group">
+          <label>Trip Type</label>
+          <select id="trip-type" class="form-control">
+            <option value="School">School Trip</option>
+            <option value="Additional">Additional Trip</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Distance (KM)</label>
+          <input type="number" id="trip-distance-km" class="form-control" min="0" step="0.1" placeholder="Report auto-fetches this">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="form-group">
           <label>Start Time</label>
           <input type="text" id="trip-start-time" class="form-control" value="07:30 AM">
         </div>
@@ -231,6 +245,8 @@ function openEditTripModal(id) {
   document.getElementById('trip-bus-id').value = trip.busId;
   document.getElementById('trip-route-id').value = trip.routeId;
   document.getElementById('trip-driver-id').value = trip.driverId;
+  document.getElementById('trip-type').value = trip.tripType || 'School';
+  document.getElementById('trip-distance-km').value = trip.distanceKm || '';
   document.getElementById('trip-start-time').value = trip.startTime;
   document.getElementById('trip-end-time').value = trip.endTime;
   document.getElementById('trip-status').value = trip.status;
@@ -248,17 +264,19 @@ function saveTrip(event) {
   const startTime = document.getElementById('trip-start-time').value.trim();
   const endTime = document.getElementById('trip-end-time').value.trim();
   const status = document.getElementById('trip-status').value;
+  const tripType = document.getElementById('trip-type').value;
+  const distanceKm = Number(document.getElementById('trip-distance-km').value || 0);
 
   const data = window.db.getData();
 
   if (idVal) {
     const idx = data.trips.findIndex(t => t.id === Number(idVal));
     if (idx !== -1) {
-      data.trips[idx] = { ...data.trips[idx], tripId, date, schoolId, busId, routeId, driverId, startTime, endTime, status };
+      data.trips[idx] = { ...data.trips[idx], tripId, date, schoolId, busId, routeId, driverId, startTime, endTime, status, tripType, distanceKm };
       showToast('Trip updated', 'success');
     }
   } else {
-    data.trips.push({ id: Date.now(), tripId, date, schoolId, busId, routeId, driverId, startTime, endTime, status });
+    data.trips.push({ id: Date.now(), tripId, date, schoolId, busId, routeId, driverId, startTime, endTime, status, tripType, distanceKm });
     showToast('Trip scheduled successfully', 'success');
   }
 
@@ -268,13 +286,20 @@ function saveTrip(event) {
 }
 
 function deleteTrip(id) {
-  if (confirm('Are you sure you want to delete this trip record?')) {
-    const data = window.db.getData();
-    data.trips = data.trips.filter(t => t.id !== id);
-    window.db.saveData(data);
-    showToast('Trip deleted', 'success');
-    renderTripsPage();
-  }
+  const numId = Number(id);
+  const trip = window.db.getTrips().find(t => t.id === numId);
+  const tripName = trip ? (trip.tripId || 'Trip Record') : 'Trip Record';
+
+  showDeleteConfirmationModal({
+    itemTitle: tripName,
+    onConfirm: () => {
+      const data = window.db.getData();
+      data.trips = data.trips.filter(t => t.id !== numId);
+      window.db.saveData(data);
+      showToast('Trip record deleted', 'success');
+      renderTripsPage();
+    }
+  });
 }
 
 window.renderTripsPage = renderTripsPage;

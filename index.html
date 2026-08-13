@@ -3,20 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>School Transport Management System</title>
+  <title>VMS PRO - Vehicle Management System</title>
   
-  <!-- Inter Font -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
   
-  <!-- FontAwesome Icons CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- Custom Stylesheet -->
+  <!-- Chart.js Engine -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous" defer></script>
+
+  <!-- Main System Stylesheet -->
   <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
@@ -31,16 +26,19 @@
       <div class="auth-banner">
         <div class="auth-brand">
           <i class="fa-solid fa-bus"></i>
-          <span>EduTransit SaaS</span>
+          <div>
+            VMS PRO
+            <span>Vehicle Management System</span>
+          </div>
         </div>
 
         <div class="auth-hero-text">
-          <h2>Centralized School Fleet & Operations Platform</h2>
-          <p>Real-time vehicle tracking, financial compliance, renewal alerts, and multi-campus transportation management.</p>
+          <h4>It is a Complete Operating System for your School Transportation Management.</h4>
+          <p>Financial Compliance, Renewal Alerts, and Multi-Campus Transportation Management.</p>
         </div>
 
         <div class="auth-footer-note">
-          © 2026 School Transport Management System
+          © 2026 SparkIT Techno Solutions Pvt. Ltd.
         </div>
       </div>
 
@@ -54,7 +52,7 @@
             <label for="login-username">Username / Email</label>
             <div class="input-with-icon">
               <i class="fa-regular fa-user"></i>
-              <input type="text" id="login-username" class="form-control" placeholder="Enter your username" required value="superadmin">
+              <input type="text" id="login-username" class="form-control" placeholder="Enter your username" required>
             </div>
           </div>
 
@@ -62,7 +60,7 @@
             <label for="login-password">Password</label>
             <div class="input-with-icon">
               <i class="fa-solid fa-lock"></i>
-              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required value="super123">
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
             </div>
           </div>
 
@@ -85,20 +83,26 @@
             <a href="#" id="forgot-password-link" class="forgot-link">Forgot password?</a>
           </div>
 
-          <button type="submit" class="btn-primary">
+          <button type="submit" class="btn-primary" id="login-submit-btn">
             <span>Sign In to Dashboard</span>
             <i class="fa-solid fa-arrow-right"></i>
           </button>
+
+          <div id="login-error-msg" style="display:none; margin-top:10px; padding:10px 14px; background:#fef2f2; border:1px solid #fca5a5; border-radius:8px; font-size:13px; color:#dc2626;"></div>
         </form>
+
+        <div style="text-align:center; margin-top: 8px;">
+          <a href="#" id="clear-storage-link" style="font-size: 11.5px; color: #94a3b8; text-decoration: none;" onclick="clearStorageAndReset(event)">Having trouble? Reset session &amp; try again</a>
+        </div>
 
         <!-- Demo Credentials Pills -->
         <div class="demo-credentials-box">
           <h4><i class="fa-solid fa-key"></i> Quick Demo Logins:</h4>
           <div class="demo-pill-group">
-            <button class="demo-pill" onclick="fillDemoCredentials('superadmin', 'super123', 'Super Admin')">Super Admin</button>
-            <button class="demo-pill" onclick="fillDemoCredentials('admin', 'admin123', 'Admin')">Admin</button>
-            <button class="demo-pill" onclick="fillDemoCredentials('school1', 'school123', 'School')">School 1</button>
-            <button class="demo-pill" onclick="fillDemoCredentials('school2', 'school123', 'School')">School 2</button>
+            <button class="demo-pill" data-demo-user="superadmin" data-demo-role="Super Admin">Super Admin</button>
+            <button class="demo-pill" data-demo-user="admin"      data-demo-role="Admin">Admin</button>
+            <button class="demo-pill" data-demo-user="school1"    data-demo-role="School">School 1</button>
+            <button class="demo-pill" data-demo-user="school2"    data-demo-role="School">School 2</button>
           </div>
         </div>
 
@@ -119,8 +123,8 @@
           <i class="fa-solid fa-bus"></i>
         </div>
         <div class="sidebar-title">
-          EduTransit
-          <span>Transport Manager</span>
+          VMS PRO
+          <span>Vehicle Management System</span>
         </div>
       </div>
 
@@ -142,16 +146,22 @@
           <i class="fa-solid fa-id-card"></i>
           <span>Drivers</span>
         </a>
+        <a href="#" class="nav-item" data-page="attendants">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Attendants</span>
+        </a>
         <a href="#" class="nav-item" data-page="routes">
           <i class="fa-solid fa-route"></i>
           <span>Routes</span>
         </a>
-        <a href="#" class="nav-item" data-page="trips">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <span>Trips</span>
+
+        <div class="menu-category" id="menu-category-school-entry">School Entry & Operations</div>
+        <a href="#" class="nav-item" data-page="school-entry">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span>School Entry</span>
         </a>
 
-        <div class="menu-category">Financials & Alerts</div>
+        <div class="menu-category">Financials & Compliance</div>
         <a href="#" class="nav-item" data-page="income">
           <i class="fa-solid fa-wallet"></i>
           <span>Income</span>
@@ -175,12 +185,6 @@
           <span>Settings</span>
         </a>
       </nav>
-
-      <div class="sidebar-footer">
-        <button class="btn-secondary" style="width: 100%; border-color: rgba(255,255,255,0.1); color: #cbd5e1; background: rgba(255,255,255,0.05);" onclick="app.logout()">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
-      </div>
     </aside>
 
     <!-- Main Wrapper -->
@@ -225,10 +229,16 @@
             </button>
 
             <!-- Notification Dropdown -->
-            <div class="dropdown-panel" id="notif-dropdown">
-              <div class="dropdown-header">
-                <span>Renewal Alerts</span>
-                <small style="color: var(--color-income); cursor: pointer;" onclick="app.navigateTo('renewals')">View All</small>
+            <div class="dropdown-panel" id="notif-dropdown" style="width: 390px;">
+              <div class="dropdown-header" style="padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                <span style="font-weight: 700; font-size: 14px;">Renewal Alerts</span>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11.5px;">
+                  <span id="notif-read-toggle-btn" style="color: var(--color-primary); cursor: pointer; font-weight: 600;" onclick="app.toggleNotificationsReadState()">Mark as Read</span>
+                  <span style="color: var(--color-border);">•</span>
+                  <span style="color: var(--color-expense); cursor: pointer; font-weight: 600;" onclick="app.clearAllNotifications()">Clear All</span>
+                  <span style="color: var(--color-border);">•</span>
+                  <span style="color: var(--color-income); cursor: pointer; font-weight: 600;" onclick="app.navigateTo('renewals')">View All</span>
+                </div>
               </div>
               <div class="dropdown-body" id="notif-dropdown-list">
                 <!-- Injected via JavaScript -->
@@ -245,17 +255,10 @@
             </div>
             <i class="fa-solid fa-chevron-down" style="font-size: 11px; color: var(--color-text-secondary);"></i>
 
-            <div class="dropdown-panel" id="profile-dropdown">
-              <div class="dropdown-header">Account Controls</div>
-              <div class="dropdown-body">
-                <div class="dropdown-item" onclick="app.navigateTo('settings')" style="cursor: pointer;">
-                  <i class="fa-solid fa-user-gear"></i>
-                  <span>Profile Preferences</span>
-                </div>
-                <div class="dropdown-item" onclick="app.logout()" style="cursor: pointer; color: var(--color-expense);">
-                  <i class="fa-solid fa-right-from-bracket"></i>
-                  <span>Sign Out</span>
-                </div>
+            <div class="dropdown-panel" id="profile-dropdown" style="width: auto; min-width: 160px; padding: 6px;">
+              <div class="dropdown-item" onclick="app.logout()" style="cursor: pointer; color: var(--color-expense); border-bottom: none; border-radius: 10px; align-items: center;">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span style="font-weight: 600;">Sign Out</span>
               </div>
             </div>
           </div>
@@ -268,7 +271,9 @@
         <div id="schools-view" class="page"></div>
         <div id="vehicles-view" class="page"></div>
         <div id="drivers-view" class="page"></div>
+        <div id="attendants-view" class="page"></div>
         <div id="routes-view" class="page"></div>
+        <div id="school-entry-view" class="page"></div>
         <div id="trips-view" class="page"></div>
         <div id="income-view" class="page"></div>
         <div id="expenses-view" class="page"></div>
@@ -335,21 +340,27 @@
   </div>
 
 
+  <!-- Dedicated Statement Print Container -->
+  <div id="statement-print-container"></div>
+
   <!-- JavaScript Application Modules -->
-  <script src="js/data.js?v=20"></script>
-  <script src="js/utils.js?v=20"></script>
-  <script src="js/motion.js?v=20"></script>
-  <script src="js/auth.js?v=20"></script>
-  <script src="js/dashboard.js?v=20"></script>
-  <script src="js/schools.js?v=20"></script>
-  <script src="js/vehicles.js?v=20"></script>
-  <script src="js/drivers.js?v=20"></script>
-  <script src="js/routes.js?v=20"></script>
-  <script src="js/trips.js?v=20"></script>
-  <script src="js/income.js?v=20"></script>
-  <script src="js/expenses.js?v=20"></script>
-  <script src="js/renewals.js?v=20"></script>
-  <script src="js/reports.js?v=20"></script>
-  <script src="js/app.js?v=20"></script>
+  <script src="js/data.js?v=23"></script>
+  <script src="js/utils.js?v=23"></script>
+  <script src="js/motion.js?v=23"></script>
+  <script src="js/auth.js?v=23"></script>
+  <script src="js/dashboard.js?v=23"></script>
+  <script src="js/schools.js?v=23"></script>
+  <script src="js/vehicles.js?v=23"></script>
+  <script src="js/drivers.js?v=23"></script>
+  <script src="js/attendants.js?v=23"></script>
+  <script src="js/routes.js?v=23"></script>
+  <script src="js/schoolentry.js?v=23"></script>
+  <script src="js/income.js?v=23"></script>
+  <script src="js/expenses.js?v=23"></script>
+  <script src="js/renewals.js?v=23"></script>
+  <script src="js/statement.js?v=23"></script>
+  <script src="js/reportbuilder.js?v=23"></script>
+  <script src="js/reports.js?v=23"></script>
+  <script src="js/app.js?v=23"></script>
 </body>
 </html>

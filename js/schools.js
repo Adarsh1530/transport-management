@@ -63,6 +63,9 @@ function renderSchoolRows(schools) {
     return `<tr><td colspan="9" class="empty-state">No school records found.</td></tr>`;
   }
 
+  const user = window.auth.getCurrentUser();
+  const canViewExpenses = window.auth.canViewExpenses(user ? user.role : null);
+
   return schools.map(s => {
     const vCount = window.db.getVehicles(s.id).length;
     const inc = window.db.getTotalIncome(s.id);
@@ -76,8 +79,8 @@ function renderSchoolRows(schools) {
         <td>${escapeHTML(s.contact)}</td>
         <td><span class="badge badge-neutral">${vCount} Vehicles</span></td>
         <td style="color: var(--color-income); font-weight: 600;">${formatCurrency(inc)}</td>
-        <td style="color: var(--color-expense); font-weight: 600;">${formatCurrency(exp)}</td>
-        <td style="color: var(--color-profit); font-weight: 700;">${formatCurrency(prof)}</td>
+        <td style="color: var(--color-expense); font-weight: 600;">${canViewExpenses ? formatCurrency(exp) : '<span style="font-size: 12px; color: #94a3b8;"><i class="fa-solid fa-lock"></i> Restricted</span>'}</td>
+        <td style="color: var(--color-profit); font-weight: 700;">${canViewExpenses ? formatCurrency(prof) : '<span style="font-size: 12px; color: #94a3b8;"><i class="fa-solid fa-lock"></i> Restricted</span>'}</td>
         <td><span class="badge ${s.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${s.status}</span></td>
         <td>
           <div class="action-buttons">
@@ -188,14 +191,30 @@ function saveSchool(event) {
 }
 
 function deleteSchool(id) {
-  if (confirm('Are you sure you want to delete this school record?')) {
-    const data = window.db.getData();
-    data.schools = data.schools.filter(s => s.id !== id);
-    window.db.saveData(data);
-    showToast('School deleted successfully', 'success');
-    renderSchoolsPage();
-    if (typeof renderDashboard === 'function') renderDashboard();
-  }
+  const school = window.db.getSchools().find(s => s.id === Number(id));
+  const sName = school ? school.name : 'School';
+
+  confirmDeleteModal({
+    contentName: sName,
+    entityType: 'School',
+    onConfirm: () => {
+      const data = window.db.getData();
+      const numId = Number(id);
+      data.schools = (data.schools || []).filter(s => s.id !== numId);
+      data.vehicles = (data.vehicles || []).filter(v => v.schoolId !== numId);
+      data.drivers = (data.drivers || []).filter(d => d.schoolId !== numId);
+      data.routes = (data.routes || []).filter(r => r.schoolId !== numId);
+      data.attendants = (data.attendants || []).filter(a => a.schoolId !== numId);
+      data.renewals = (data.renewals || []).filter(r => r.schoolId !== numId);
+      data.income = (data.income || []).filter(i => i.schoolId !== numId);
+      data.expenses = (data.expenses || []).filter(e => e.schoolId !== numId);
+
+      window.db.saveData(data);
+      showToast(`School "${sName}" and all associated data deleted successfully`, 'success');
+      renderSchoolsPage();
+      if (typeof renderDashboard === 'function') renderDashboard();
+    }
+  });
 }
 
 window.renderSchoolsPage = renderSchoolsPage;

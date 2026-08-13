@@ -231,15 +231,30 @@ class MotionEngine {
     if (!btn) return;
 
     if (isLoading) {
-      btn.dataset.originalHtml = btn.innerHTML;
+      // Store only the plain-text label and icon class — never raw HTML
+      btn.dataset.originalText  = btn.textContent.trim();
+      btn.dataset.originalIcon  = btn.querySelector('i')?.className || '';
       btn.disabled = true;
       btn.classList.add('btn-loading');
-      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${loadingText}`;
+
+      btn.textContent = '';
+      const spinner = document.createElement('i');
+      spinner.className = 'fa-solid fa-circle-notch fa-spin';
+      const label = document.createTextNode(\` ${loadingText}\`);
+      btn.appendChild(spinner);
+      btn.appendChild(label);
     } else {
-      if (btn.dataset.originalHtml) {
-        btn.innerHTML = btn.dataset.originalHtml;
-        delete btn.dataset.originalHtml;
+      btn.textContent = '';
+      if (btn.dataset.originalIcon) {
+        const icon = document.createElement('i');
+        icon.className = btn.dataset.originalIcon;
+        btn.appendChild(icon);
+        btn.appendChild(document.createTextNode(\` ${btn.dataset.originalText || ''}\`));
+      } else {
+        btn.textContent = btn.dataset.originalText || '';
       }
+      delete btn.dataset.originalText;
+      delete btn.dataset.originalIcon;
       btn.disabled = false;
       btn.classList.remove('btn-loading');
     }

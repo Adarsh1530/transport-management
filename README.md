@@ -1,17 +1,17 @@
-# EduTransit SaaS — School Transport Management System
+# VMS PRO — School Transport Management System
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 
-A modern, high-performance, centralized **School Fleet & Operations Management Platform** designed for educational institutions, multi-campus transport networks, and fleet managers. Built using **100% pure Vanilla HTML5, CSS3, and ES6 JavaScript**, enhanced with a premium SaaS-grade **motion and micro-interaction layer**.
+A modern, high-performance, centralized **School Vehicle & Operations Management Platform** designed for educational institutions, multi-campus transport networks, and vehicle managers. Built using **100% pure Vanilla HTML5, CSS3, and ES6 JavaScript**, enhanced with a premium SaaS-grade **motion and micro-interaction layer**.
 
 ---
 
 ## 🌟 Executive Overview
 
-EduTransit SaaS provides complete operational control over campus bus fleets, driver compliance, routes, trip scheduling, financial collections, and maintenance alerts. 
+VMS PRO provides complete operational control over campus bus vehicles, driver compliance, routes, trip scheduling, financial collections, and maintenance alerts. 
 
 It features dynamic multi-campus scopes, role-based access control (Super Admin, Admin, and School Panel roles), and real-time executive analytics—all within a fast, responsive Single-Page Application (SPA) architecture.
 
@@ -19,17 +19,17 @@ It features dynamic multi-campus scopes, role-based access control (Super Admin,
 
 ## ✨ Key Platform Features
 
-- **🚌 Vehicle Fleet Management**: Complete bus directory tracking vehicle specifications, capacities, status (Active, Maintenance, Inactive), and campus assignments.
+- **🚌 Vehicle Management**: Complete bus directory tracking vehicle specifications, capacities, status (Active, Maintenance, Inactive), and campus assignments.
 - **🆔 Driver & Staff Directory**: Manage driver profiles, mobile contacts, license verification numbers, and license expiry monitoring.
 - **🛣️ Routes & Stops Management**: Route planning, start/end stop locations, assigned buses, and student capacities.
 - **⏱️ Trip Dispatch & Tracking**: Real-time trip logging, schedules, driver assignments, and status tracking.
 - **💰 Financial Income & Expense Analytics**: Gross revenue collection tracking, operational expenses, net campus profit calculations, and automated Indian Currency (`₹`) formatting.
 - **🔔 Compliance & Renewal Warnings**: Automated tracking of vehicle insurance, fitness certificates, permit renewals, and pollution certificates with dynamic countdown urgency badges (`Expired`, `Due Today`, `<10 Days`, `<30 Days`).
-- **📊 Analytics & Executive Reports**: Executive system summaries, campus performance comparison tables, Chart.js visual financial & fleet distribution analytics, and instant CSV report exports.
+- **📊 Analytics & Executive Reports**: Executive system summaries, campus performance comparison tables, Chart.js visual financial & vehicle distribution analytics, and instant CSV report exports.
 - **🔐 Multi-Role Access Control**: 
   - **Super Admin**: Complete control across all schools, custom role permissions matrix, system data reset.
   - **Admin**: Multi-school operational oversight.
-  - **School Panel**: Campus-scoped view restricted to assigned school fleet and finances.
+  - **School Panel**: Campus-scoped view restricted to assigned school vehicles and finances.
 
 ---
 
@@ -93,7 +93,7 @@ transport-management/
     ├── auth.js           # Session authentication & role permission checker
     ├── dashboard.js      # Global & School-scoped dashboard renderer + Chart.js
     ├── schools.js        # Schools management module
-    ├── vehicles.js       # Vehicles fleet management module
+    ├── vehicles.js       # Vehicles management module
     ├── drivers.js        # Drivers directory module
     ├── routes.js         # Routes & stops planning module
     ├── trips.js          # Trip dispatch module
@@ -125,4 +125,4 @@ transport-management/
 
 ---
 
-© 2026 EduTransit SaaS — School Transport Management System.
+© 2026 VMS PRO — School Transport Management System.

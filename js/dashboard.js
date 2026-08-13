@@ -49,21 +49,22 @@ function renderDashboard() {
   }
 }
 
-// Super Admin & Admin Aggregated Dashboard
 function renderGlobalDashboard(container, user) {
+  const role = user ? user.role : null;
   const schools = window.db.getSchools();
   const vehicles = window.db.getVehicles();
-  const income = window.db.getTotalIncome();
-  const expense = window.db.getTotalExpenses();
-  const profit = window.db.getTotalProfit();
+  const income = window.db.getTotalIncome(null, role);
+  const expense = window.db.getTotalExpenses(null, role);
+  const profit = window.db.getTotalProfit(null, role);
   const renewals = window.db.getRenewals();
+  const canViewExpenses = window.auth.canViewExpenses(role);
 
   container.innerHTML = `
     <!-- Top Metric Cards Grid -->
     <div class="metrics-grid-5">
       <div class="card metric-card metric-black">
         <div class="metric-card-top">
-          <span class="metric-title">Total School</span>
+          <span class="metric-title">Total Schools</span>
           <div class="metric-icon-box"><i class="fa-solid fa-school"></i></div>
         </div>
         <div class="metric-value">${schools.length}</div>
@@ -72,11 +73,11 @@ function renderGlobalDashboard(container, user) {
 
       <div class="card metric-card metric-black">
         <div class="metric-card-top">
-          <span class="metric-title">Total Vehicle</span>
+          <span class="metric-title">Total Vehicles</span>
           <div class="metric-icon-box"><i class="fa-solid fa-bus"></i></div>
         </div>
         <div class="metric-value">${vehicles.length}</div>
-        <div class="metric-sub positive"><i class="fa-solid fa-check"></i> Fleet Capacity</div>
+        <div class="metric-sub positive"><i class="fa-solid fa-check"></i> Vehicle Capacity</div>
       </div>
 
       <div class="card metric-card metric-blue">
@@ -93,8 +94,8 @@ function renderGlobalDashboard(container, user) {
           <span class="metric-title">Expense</span>
           <div class="metric-icon-box"><i class="fa-solid fa-receipt"></i></div>
         </div>
-        <div class="metric-value">${formatCurrency(expense)}</div>
-        <div class="metric-sub"><i class="fa-solid fa-arrow-down"></i> Operations Cost</div>
+        <div class="metric-value">${canViewExpenses ? formatCurrency(expense) : '<span style="font-size: 15px; color: #94a3b8;"><i class="fa-solid fa-lock" style="font-size: 12px; margin-right: 4px;"></i> Restricted</span>'}</div>
+        <div class="metric-sub">${canViewExpenses ? '<i class="fa-solid fa-arrow-down"></i> Operations Cost' : 'Access Restricted'}</div>
       </div>
 
       <div class="card metric-card metric-green">
@@ -102,8 +103,8 @@ function renderGlobalDashboard(container, user) {
           <span class="metric-title">Profit</span>
           <div class="metric-icon-box"><i class="fa-solid fa-chart-line"></i></div>
         </div>
-        <div class="metric-value">${formatCurrency(profit)}</div>
-        <div class="metric-sub positive"><i class="fa-solid fa-arrow-up"></i> Net Earnings</div>
+        <div class="metric-value">${canViewExpenses ? formatCurrency(profit) : '<span style="font-size: 15px; color: #94a3b8;"><i class="fa-solid fa-lock" style="font-size: 12px; margin-right: 4px;"></i> Restricted</span>'}</div>
+        <div class="metric-sub positive">${canViewExpenses ? '<i class="fa-solid fa-arrow-up"></i> Net Earnings' : 'Access Restricted'}</div>
       </div>
     </div>
 
@@ -131,34 +132,6 @@ function renderGlobalDashboard(container, user) {
         <div style="height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
           <canvas id="chart-transport-overview"></canvas>
         </div>
-      </div>
-    </div>
-
-    <!-- School Summary Table Section (Reference Design) -->
-    <div class="card" style="padding: 24px; margin-bottom: 28px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-        <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">School Summary</h3>
-        <span style="font-size: 12.5px; color: #94a3b8; font-weight: 500;">Click a row to view details</span>
-      </div>
-
-      <div class="table-container">
-        <table class="custom-table" style="font-size: 13px;">
-          <thead>
-            <tr>
-              <th style="padding: 12px 16px;">SCHOOL</th>
-              <th style="padding: 12px 16px;">DATE</th>
-              <th style="padding: 12px 16px;">STUDENTS</th>
-              <th style="padding: 12px 16px;">TOTAL DEMAND</th>
-              <th style="padding: 12px 16px;">COLLECTION</th>
-              <th style="padding: 12px 16px;">DUE</th>
-              <th style="padding: 12px 16px;">COLLECTION %</th>
-              <th style="padding: 12px 16px; text-align: center;">STATUS</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${renderSchoolSummaryRows(schools)}
-          </tbody>
-        </table>
       </div>
     </div>
 
@@ -190,7 +163,7 @@ function renderGlobalDashboard(container, user) {
     </div>
   `;
 
-  initGlobalCharts(income, expense, profit, schools, vehicles);
+  initGlobalCharts(income, expense, profit, schools, vehicles, canViewExpenses);
 }
 
 // Individual School Dashboard (Supports both Super Admin/Admin viewing a specific school & School Role)
@@ -199,11 +172,13 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
   const schoolObj = schools.find(s => s.id === schoolId);
   const schoolName = schoolObj ? schoolObj.name : user.schoolName;
 
+  const role = user ? user.role : null;
   const schoolVehicles = window.db.getVehicles(schoolId);
-  const income = window.db.getTotalIncome(schoolId);
-  const expense = window.db.getTotalExpenses(schoolId);
-  const profit = window.db.getTotalProfit(schoolId);
+  const income = window.db.getTotalIncome(schoolId, role);
+  const expense = window.db.getTotalExpenses(schoolId, role);
+  const profit = window.db.getTotalProfit(schoolId, role);
   const renewals = window.db.getRenewals(schoolId);
+  const canViewExpenses = window.auth.canViewExpenses(role);
 
   const activeVehicles = schoolVehicles.filter(v => v.status === 'Active').length;
   const maintVehicles = schoolVehicles.filter(v => v.status === 'Maintenance').length;
@@ -230,11 +205,11 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
     <div class="metrics-grid-4">
       <div class="card metric-card metric-black">
         <div class="metric-card-top">
-          <span class="metric-title">Total Vehicle</span>
+          <span class="metric-title">Total Vehicles</span>
           <div class="metric-icon-box"><i class="fa-solid fa-bus"></i></div>
         </div>
         <div class="metric-value">${schoolVehicles.length}</div>
-        <div class="metric-sub positive"><i class="fa-solid fa-check"></i> Campus Fleet Size</div>
+        <div class="metric-sub positive"><i class="fa-solid fa-check"></i> Campus Vehicle Count</div>
       </div>
 
       <div class="card metric-card metric-blue">
@@ -251,8 +226,8 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
           <span class="metric-title">Expense</span>
           <div class="metric-icon-box"><i class="fa-solid fa-receipt"></i></div>
         </div>
-        <div class="metric-value">${formatCurrency(expense)}</div>
-        <div class="metric-sub"><i class="fa-solid fa-arrow-down"></i> Fleet Outlay</div>
+        <div class="metric-value">${canViewExpenses ? formatCurrency(expense) : '<span style="font-size: 15px; color: #94a3b8;"><i class="fa-solid fa-lock" style="font-size: 12px; margin-right: 4px;"></i> Restricted</span>'}</div>
+        <div class="metric-sub">${canViewExpenses ? '<i class="fa-solid fa-arrow-down"></i> Operating Expenses' : 'Access Restricted'}</div>
       </div>
 
       <div class="card metric-card metric-green">
@@ -260,8 +235,8 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
           <span class="metric-title">Profit</span>
           <div class="metric-icon-box"><i class="fa-solid fa-chart-line"></i></div>
         </div>
-        <div class="metric-value">${formatCurrency(profit)}</div>
-        <div class="metric-sub positive"><i class="fa-solid fa-arrow-up"></i> Net Campus Profit</div>
+        <div class="metric-value">${canViewExpenses ? formatCurrency(profit) : '<span style="font-size: 15px; color: #94a3b8;"><i class="fa-solid fa-lock" style="font-size: 12px; margin-right: 4px;"></i> Restricted</span>'}</div>
+        <div class="metric-sub positive">${canViewExpenses ? '<i class="fa-solid fa-arrow-up"></i> Net Campus Profit' : 'Access Restricted'}</div>
       </div>
     </div>
 
@@ -283,11 +258,11 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
         <div class="section-header">
           <div>
             <h3>Vehicle Distribution</h3>
-            <p>Active vs maintenance fleet status</p>
+            <p>Active vs maintenance vehicle status</p>
           </div>
         </div>
         <div style="height: 280px; position: relative; display: flex; align-items: center; justify-content: center;">
-          <canvas id="chart-school-fleet"></canvas>
+          <canvas id="chart-school-vehicle"></canvas>
         </div>
       </div>
     </div>
@@ -319,44 +294,33 @@ function renderSchoolDashboard(container, user, schoolId, allowBackToGlobal = fa
     </div>
   `;
 
-  initSchoolCharts(income, expense, profit, schoolVehicles.length, activeVehicles, maintVehicles);
+  initSchoolCharts(income, expense, profit, schoolVehicles.length, activeVehicles, maintVehicles, canViewExpenses);
 }
 
-// Render School Summary Table Rows (Reference Design)
+// Render School Summary Table Rows
 function renderSchoolSummaryRows(schools) {
   if (!schools || !schools.length) {
     return `<tr><td colspan="8" class="empty-state">No school summary records found.</td></tr>`;
   }
 
-  const seedSchoolMetrics = {
-    1: { date: '08 Aug 2026', students: 450, demand: 663000, collection: 517000, due: 146000, pct: 78.0, status: 'Average' },
-    2: { date: '08 Aug 2026', students: 381, demand: 510500, collection: 416000, due: 94500, pct: 81.5, status: 'Good' },
-    3: { date: '08 Aug 2026', students: 520, demand: 780000, collection: 650000, due: 130000, pct: 83.3, status: 'Good' },
-    4: { date: '08 Aug 2026', students: 410, demand: 580000, collection: 470000, due: 110000, pct: 81.0, status: 'Good' },
-    5: { date: '08 Aug 2026', students: 350, demand: 570000, collection: 455000, due: 115000, pct: 79.8, status: 'Average' }
-  };
-
   return schools.map(s => {
     const vCount = window.db.getVehicles(s.id).length;
     const realInc = window.db.getTotalIncome(s.id);
+    const collection = realInc;
+    const demand = collection > 0 ? Math.round(collection * 1.25) : 300000;
+    const due = Math.max(0, demand - collection);
+    const pct = demand > 0 ? Math.min(100, Number(((collection / demand) * 100).toFixed(1))) : 0;
+    const status = pct >= 85 ? 'Excellent' : pct >= 75 ? 'Good' : 'Average';
     
-    let metrics = seedSchoolMetrics[s.id];
-    if (!metrics) {
-      const collection = realInc || 300000;
-      const demand = collection + Math.round(collection * 0.22);
-      const due = demand - collection;
-      const pct = Math.min(100, Number(((collection / demand) * 100).toFixed(1)));
-      const status = pct >= 85 ? 'Excellent' : pct >= 80 ? 'Good' : 'Average';
-      metrics = {
-        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-        students: vCount * 25,
-        demand,
-        collection,
-        due,
-        pct,
-        status
-      };
-    }
+    const metrics = {
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      students: vCount * 25 || 100,
+      demand,
+      collection,
+      due,
+      pct,
+      status
+    };
 
     let badgeBg = '#fef3c7';
     let badgeColor = '#b45309';
@@ -410,7 +374,6 @@ function renderRenewalRows(renewals, includeSchoolColumn = true) {
   const vehicles = window.db.getVehicles();
   const schools = window.db.getSchools();
 
-  // Enrich with dynamic status & sort by urgency
   const enriched = renewals.map(r => {
     const vehicle = vehicles.find(v => v.id === r.vehicleId);
     const school = schools.find(s => s.id === r.schoolId);
@@ -443,17 +406,17 @@ function renderRenewalRows(renewals, includeSchoolColumn = true) {
 }
 
 // Initialize Chart.js for Global View
-function initGlobalCharts(income, expense, profit, schools, vehicles) {
+function initGlobalCharts(income, expense, profit, schools, vehicles, canViewExpenses = true) {
   const ctxFinancial = document.getElementById('chart-financial-overview')?.getContext('2d');
   if (ctxFinancial) {
     activeCharts['financial'] = new Chart(ctxFinancial, {
       type: 'bar',
       data: {
-        labels: ['Income', 'Expense', 'Profit'],
+        labels: canViewExpenses ? ['Income', 'Expense', 'Profit'] : ['Income'],
         datasets: [{
           label: 'Amount (₹)',
-          data: [income, expense, profit],
-          backgroundColor: ['#2563EB', '#DC2626', '#16A34A'],
+          data: canViewExpenses ? [income, expense, profit] : [income],
+          backgroundColor: canViewExpenses ? ['#2563EB', '#DC2626', '#16A34A'] : ['#2563EB'],
           borderRadius: 8
         }]
       },
@@ -511,16 +474,16 @@ function initGlobalCharts(income, expense, profit, schools, vehicles) {
 }
 
 // Initialize Chart.js for School View
-function initSchoolCharts(income, expense, profit, totalVehicles, activeVehicles, maintVehicles) {
+function initSchoolCharts(income, expense, profit, totalVehicles, activeVehicles, maintVehicles, canViewExpenses = true) {
   const ctxFinancial = document.getElementById('chart-school-financial')?.getContext('2d');
   if (ctxFinancial) {
     activeCharts['schoolFinancial'] = new Chart(ctxFinancial, {
       type: 'bar',
       data: {
-        labels: ['Income', 'Expense', 'Profit'],
+        labels: canViewExpenses ? ['Income', 'Expense', 'Profit'] : ['Income'],
         datasets: [{
-          data: [income, expense, profit],
-          backgroundColor: ['#2563EB', '#DC2626', '#16A34A'],
+          data: canViewExpenses ? [income, expense, profit] : [income],
+          backgroundColor: canViewExpenses ? ['#2563EB', '#DC2626', '#16A34A'] : ['#2563EB'],
           borderRadius: 8
         }]
       },
@@ -539,12 +502,12 @@ function initSchoolCharts(income, expense, profit, totalVehicles, activeVehicles
     });
   }
 
-  const ctxFleet = document.getElementById('chart-school-fleet')?.getContext('2d');
-  if (ctxFleet) {
-    activeCharts['schoolFleet'] = new Chart(ctxFleet, {
+  const ctxVehicle = document.getElementById('chart-school-vehicle')?.getContext('2d');
+  if (ctxVehicle) {
+    activeCharts['school Vehicles'] = new Chart(ctxVehicle, {
       type: 'doughnut',
       data: {
-        labels: ['Active Fleet', 'In Maintenance'],
+        labels: ['Active Vehicles', 'In Maintenance'],
         datasets: [{
           data: [activeVehicles, maintVehicles],
           backgroundColor: ['#16A34A', '#F59E0B'],
@@ -568,4 +531,3 @@ window.renderDashboard = renderDashboard;
 window.selectDashboardSchool = selectDashboardSchool;
 window.renderSchoolDashboard = renderSchoolDashboard;
 window.renderGlobalDashboard = renderGlobalDashboard;
-
